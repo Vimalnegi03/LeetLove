@@ -119,7 +119,7 @@ export const check=async(req,res)=>{
             email:user.email
         }});
     } catch (error) {
-        
+        return res.status(400).json({message:error.message,success:false})
     }
 
 }
