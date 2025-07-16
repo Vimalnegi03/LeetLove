@@ -80,7 +80,7 @@ export const login=async(req,res)=>{
     })
     }
     else{
-        return res.starus(400).json({message:"please enter correct password",success:false})
+        return res.status(400).json({message:"please enter correct password",success:false})
     }  
     }
     catch (error) {
