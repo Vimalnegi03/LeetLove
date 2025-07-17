@@ -18,6 +18,10 @@ enum Difficulty{
   MEDIUM
   HARD
 }
+enum Status{
+  ACCEPTED
+  WRONG_ANSWER
+}
 model User{
   id String @id @default(uuid())
   name String?
@@ -64,7 +68,7 @@ model Submission {
    sourceCode Json
    language String
    stdin String?
-   stout String?
+   stdout String?
    stderr String?
    compileOutput String?
    status String
