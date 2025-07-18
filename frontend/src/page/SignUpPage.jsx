@@ -14,6 +14,7 @@ import {
 import {z} from 'zod'
 import { use } from "react"
 import AuthImagePattern from "../components/AuthImagePattern"
+import { useAuthStore } from "../store/useAuthStore"
 const signUpSchema=z.object({
     email:z.email(),
     password:z.string().min(6,"password must be of at least 6 character"),
@@ -22,8 +23,8 @@ const signUpSchema=z.object({
 const SignUpPage = () => {
   const [showPassword, setShowPassword] = useState(false);
 
-//   const {signup , isSigninUp} = useAuthStore();
-
+  const {signup , isSigninUp} = useAuthStore();
+  
   const {
     register,
     handleSubmit,
@@ -35,7 +36,8 @@ const SignUpPage = () => {
   const onSubmit = async (data) => {
    
     try {
-          // your auth logic here
+      console.log(import.meta.env.MODE)
+       await   signup(data)
       console.log("SignUp Data:", data);
     } catch (error) {
       console.error("SignUp failed:", error);
@@ -145,17 +147,16 @@ const SignUpPage = () => {
             <button
               type="submit"
               className="btn btn-primary w-full"
-               
+               disabled={isSigninUp}
             >
-                Signup
-              {/* {isSigninUp ? (
+              {isSigninUp ? (
                 <>
                   <Loader2 className="h-5 w-5 animate-spin" />
                   Loading...
                 </>
               ) : (
-                "Sign in"
-              )} */}
+                "Sign up"
+              )}
             </button>
           </form>
 
