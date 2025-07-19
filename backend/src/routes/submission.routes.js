@@ -4,5 +4,5 @@ import { getAllSubmission,getAllSubmissionForProblem,getSubmissionsforProblem } 
 const submissionRouter=express.Router()
 submissionRouter.get("/get-all-submissons",jwtVerify,getAllSubmission)
 submissionRouter.get("/get-submission/:problemId",jwtVerify,getSubmissionsforProblem)
-submissionRouter.get("/get-submission-count/:problemId",jwtVerify,getAllSubmissionForProblem)
+submissionRouter.get("/get-submissions-count/:problemId",jwtVerify,getAllSubmissionForProblem)
 export default submissionRouter

@@ -10,7 +10,7 @@ solvedProblems:[],
 
 getAllProblem:async()=>{
   try {
-      set({isProblemLoading:true});
+      set({isProblemsLoading:true});
   const res=await axiosInstance.get("problems/get-problems")
   set({problems:res.data.problems})
   } catch (error) {
@@ -18,7 +18,7 @@ getAllProblem:async()=>{
     toast.error("failed to fetch problems")
   }
   finally{
-    set({isProblemLoading:false})
+    set({isProblemsLoading:false})
   }
 },
 
@@ -26,14 +26,18 @@ getProblemById:async(id)=>{
     set({isProblemLoading:true});
    try {
      const res=await axiosInstance.get(`problems/get-problems/${id}`)
+     console.log(res.data);
+     
      set({problem:res.data.problem})
+    //  console.log(problem,"ye hai problem");
+     
      toast.success("problem fetched successfully")
    } catch (error) {
     console.log(error.message)
     toast.error("fail to fetch problems")
    }
    finally{
-    problem.isProblemLoading = false
+   set({isProblemLoading:false})
    }
 },
 getSolvedProblemsByUser:async()=>{
