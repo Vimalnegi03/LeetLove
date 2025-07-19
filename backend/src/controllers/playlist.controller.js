@@ -62,6 +62,7 @@ try {
     })
     res.status(200).json({success:true,message:"Successfully created Playlist",playlist})
 } catch (error) {
+    
     return res.status(500).json({error:error.message})
 }
 }
@@ -75,12 +76,13 @@ try {
     }
     const problemsInPlaylist=await db.problemsInPlaylist.createMany({
         data:problemIds.map((problemId)=>({
-           playlistId,
+            playlistId,
            problemId
         }))
     })
     res.status(201).json({message:"Problems added to the playlist successfully",success:true,problemsInPlaylist})
 } catch (error) {
+    console.log(error.message);
     res.status(500).json({message:error.message})
 }
 

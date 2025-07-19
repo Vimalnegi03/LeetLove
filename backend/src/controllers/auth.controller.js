@@ -116,7 +116,8 @@ export const check=async(req,res)=>{
         res.status(200).json({message:"user authenticated successfully", success:true,user:{
             role:user.role,
             name:user.name,
-            email:user.email
+            email:user.email,
+            userId:req.user.id
         }});
     } catch (error) {
         return res.status(400).json({message:error.message,success:false})
