@@ -27,7 +27,7 @@ const Navbar = () => {
                 <img
                   src={
                     authUser?.image ||
-                    "https://avatar.iran.liara.run/public/boy"
+                    "https://cdn.cloudflare.steamstatic.com/steamcommunity/public/images/avatars/f0/f0b71b7609ea68eae9e9acadff26b1926ace5ab7_full.jpg"
                   }
                   alt="User Avatar"
                   className="object-cover"
