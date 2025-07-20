@@ -77,7 +77,7 @@ const sampledpData = {
     "To reach the nth step, you can either come from the (n-1)th step or the (n-2)th step.",
   editorial:
     "This is a classic dynamic programming problem. The number of ways to reach the nth step is the sum of the number of ways to reach the (n-1)th step and the (n-2)th step, forming a Fibonacci-like sequence.",
-  testCases: [
+  testcases: [
     {
       input: "2",
       output: "2",
@@ -324,7 +324,7 @@ const sampleStringProblem = {
     "Consider using two pointers, one from the start and one from the end, moving towards the center.",
   editorial:
     "We can use two pointers approach to check if the string is a palindrome. One pointer starts from the beginning and the other from the end, moving towards each other.",
-  testCases: [
+  testcases: [
     {
       input: "A man, a plan, a canal: Panama",
       output: "true",
@@ -793,10 +793,10 @@ const navigation = useNavigate();
                             {...register(`testcases.${index}.input`)}
                             placeholder="Enter test case input"
                           />
-                          {errors.testCases?.[index]?.input && (
+                          {errors.testcases?.[index]?.input && (
                             <label className="label">
                               <span className="label-text-alt text-error">
-                                {errors.testCases[index].input.message}
+                                {errors.testcases[index].input.message}
                               </span>
                             </label>
                           )}
@@ -812,10 +812,10 @@ const navigation = useNavigate();
                             {...register(`testcases.${index}.output`)}
                             placeholder="Enter expected output"
                           />
-                          {errors.testCases?.[index]?.output && (
+                          {errors.testcases?.[index]?.output && (
                             <label className="label">
                               <span className="label-text-alt text-error">
-                                {errors.testCases[index].output.message}
+                                {errors.testcases[index].output.message}
                               </span>
                             </label>
                           )}
@@ -825,10 +825,10 @@ const navigation = useNavigate();
                   </div>
                 ))}
               </div>
-              {errors.testCases && !Array.isArray(errors.testCases) && (
+              {errors.testcases && !Array.isArray(errors.testCases) && (
                 <div className="mt-2">
                   <span className="text-error text-sm">
-                    {errors.testCases.message}
+                    {errors.testcases.message}
                   </span>
                 </div>
               )}

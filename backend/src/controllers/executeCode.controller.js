@@ -1,7 +1,11 @@
 import { poolBatchResults, submitBatch , getLanguageName } from "../libs/judge0.lib.js";
 import { db } from "../libs/db.js";
+import dotenv from 'dotenv'
+dotenv.config()
 export const executeCode = async (req, res) => {
   try {
+    // console.log(process.env.JUDGE0_API_URL);
+    
     const { source_code, language_id, stdin, expected_outputs, problemId } =
       req.body;
 
