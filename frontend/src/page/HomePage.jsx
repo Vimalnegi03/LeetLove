@@ -22,7 +22,7 @@ const HomePage = () => {
     getAllProblem();
    
     // eslint-disable-next-line
-  }, [getAllProblem, authUser?.userId]);
+  }, [getAllProblem, authUser?.userId,solvedProblems,getSolvedProblemsByUser]);
 
   // Memoized activity data for calendar
   const activityData = React.useMemo(() => {

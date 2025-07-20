@@ -5,6 +5,8 @@ export const createProblem=async(req,res)=>{
 //going to check user role once again
 //loop through each and every solution for different languages available
 const {title,description,difficulty,tags,examples,constraints,testcases,codeSnippets,referenceSolutions}=req.body
+console.log(tags)
+console.log(testcases)
 if(req.user.role!=="ADMIN")
     return res.status(403).json({message:"you are not allowed to access this routes",success:false})
 try {

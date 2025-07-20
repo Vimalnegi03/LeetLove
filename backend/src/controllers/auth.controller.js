@@ -4,10 +4,20 @@ import { db } from '../libs/db.js'
 import { UserRole } from '../generated/prisma/index.js'
 import crypto from 'crypto'
 import dotenv from 'dotenv'
+import { log } from 'console'
+import fs from "fs";
+import cloudinary from "../fileUpload/cloudinary.js";
+import upload from "../fileUpload/upload.js";
 dotenv.config()
 export const registerUser=async(req,res)=>{
     const {name,email,password}=req.body
-  try {
+    try {
+        const filePath = req.file.path;
+        const result = await cloudinary.uploader.upload(filePath, {
+          folder: "leetlove",
+        });
+    
+        fs.unlinkSync(filePath);
     if(!name||!email||!password)
         return res.status(400).json({message:"Please enter all the details",success:false})
     const existingUser=await db.user.findUnique({where:{
@@ -22,7 +32,8 @@ export const registerUser=async(req,res)=>{
             name,
             email,
             password:hashedPassword,
-            role:UserRole.USER
+            role:UserRole.USER,
+            image:result.secure_url
         }
     })
     const token=jwt.sign({id:newUser.id,role:newUser.role},process.env.JWT_SECRET,{expiresIn:process.env.JWT_EXPIRY})
@@ -117,7 +128,8 @@ export const check=async(req,res)=>{
             role:user.role,
             name:user.name,
             email:user.email,
-            userId:req.user.id
+            userId:req.user.id,
+            image:user.image
         }});
     } catch (error) {
         return res.status(400).json({message:error.message,success:false})
