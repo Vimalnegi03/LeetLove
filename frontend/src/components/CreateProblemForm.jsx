@@ -1,7 +1,7 @@
-import React from 'react'
+"use client";
 import { useForm, useFieldArray, Controller } from "react-hook-form";
-import {zodResolver} from "@hookform/resolvers/zod";
-import {z} from "zod"
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import {
   Plus,
   Trash2,
@@ -13,10 +13,10 @@ import {
   Download,
 } from "lucide-react";
 import Editor from "@monaco-editor/react";
-import { useState } from 'react';
-import {axiosInstance} from "../lib/axios"
+import { useState } from "react";
+import { axiosInstance } from "../lib/axios";
 import toast from "react-hot-toast";
-import {useNavigate} from "react-router-dom";
+import {Navigate, useNavigate} from "react-router-dom";
 
 const problemSchema = z.object({
   title: z.string().min(3, "Title must be at least 3 characters"),
@@ -63,7 +63,8 @@ const problemSchema = z.object({
   }),
 });
 
-
+// Sample problem data for pre-filling the form
+// Sample problem data for pre-filling the form
 const sampledpData = {
   title: "Climbing Stairs",
   category: "dp", // Dynamic Programming
@@ -76,7 +77,7 @@ const sampledpData = {
     "To reach the nth step, you can either come from the (n-1)th step or the (n-2)th step.",
   editorial:
     "This is a classic dynamic programming problem. The number of ways to reach the nth step is the sum of the number of ways to reach the (n-1)th step and the (n-2)th step, forming a Fibonacci-like sequence.",
-  testcases: [
+  testCases: [
     {
       input: "2",
       output: "2",
@@ -323,7 +324,7 @@ const sampleStringProblem = {
     "Consider using two pointers, one from the start and one from the end, moving towards the center.",
   editorial:
     "We can use two pointers approach to check if the string is a palindrome. One pointer starts from the beginning and the other from the end, moving towards each other.",
-  testcases: [
+  testCases: [
     {
       input: "A man, a plan, a canal: Panama",
       output: "true",
@@ -512,13 +513,18 @@ public class Main {
 };
 
 const CreateProblemForm = () => {
-    const [sampleType , setSampleType] = useState("DP")
-    const navigation = useNavigate();
-    const {register , control , handleSubmit , reset , formState:{errors}} = useForm(
-        {
-            resolver:zodResolver(problemSchema),
-            defaultValues:{
-                 testcases: [{ input: "", output: "" }],
+  const [sampleType, setSampleType] = useState("DP"); // Default to array problem
+const navigation = useNavigate();
+  const {
+    register,
+    control,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm({
+    resolver: zodResolver(problemSchema),
+    defaultValues: {
+      testcases: [{ input: "", output: "" }],
       tags: [""],
       examples: {
         JAVASCRIPT: { input: "", output: "", explanation: "" },
@@ -535,15 +541,14 @@ const CreateProblemForm = () => {
         PYTHON: "# Add your reference solution here",
         JAVA: "// Add your reference solution here",
       },
-            }
-        }
-    )
+    },
+  });
 
   const {
     fields: testCaseFields,
     append: appendTestCase,
     remove: removeTestCase,
-    replace: replacetestcases,
+    replace: replaceTestCases,
   } = useFieldArray({
     control,
     name: "testcases",
@@ -559,38 +564,40 @@ const CreateProblemForm = () => {
     name: "tags",
   });
 
-  const [isLoading , setIsLoading] = useState(false);
-
-  const onSubmit = async (value)=>{
-   try {
-    setIsLoading(true)
-    const res = await axiosInstance.post("/problems/create-problem" , value)
-    console.log(res.data);
-    toast.success(res.data.message || "Problem Created successfully⚡");
-    navigation("/");
-
-   } catch (error) {
-    console.log(error);
-    toast.error("Error creating problem")
-   }
-   finally{
+  const [isLoading, setIsLoading] = useState(false);
+  const onSubmit = async (value) => {
+    try {
+      // stringify the data
+      setIsLoading(true);
+      const res = await axiosInstance.post("/problems/create-problem", value);
+      
+      console.log(res.data);
+      toast.success(res.data.message);
+      navigation("/");
+    } catch (error) {
+      console.log("Error creating problem", error);
+      toast.error("Error creating problem");
+    } finally {
       setIsLoading(false);
-   }
-  }
+    }
+  };
 
-  const loadSampleData=()=>{
-    const sampleData = sampleType === "DP" ? sampledpData : sampleStringProblem
-  
-   replaceTags(sampleData.tags.map((tag) => tag));
-    replacetestcases(sampleData.testcases.map((tc) => tc));
+  // Function to load sample data
+  const loadSampleData = () => {
+    const sampleData =
+      sampleType === "DP" ? sampledpData : sampleStringProblem;
 
-   // Reset the form with sample data
+    // Replace the tags and test cases arrays
+    replaceTags(sampleData?.tags.map((tag) => tag));
+    replaceTestCases(sampleData?.testcases.map((tc) => tc));
+
+    // Reset the form with sample data
     reset(sampleData);
-}
+  };
 
   return (
-    <div className='container mx-auto py-8 px-4 max-w-7xl'>
-  <div className="card bg-base-100 shadow-xl">
+    <div className="container mx-auto py-8 px-4 max-w-7xl">
+      <div className="card bg-base-100 shadow-xl">
         <div className="card-body p-6 md:p-8">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 md:mb-8 pb-4 border-b">
             <h2 className="card-title text-2xl md:text-3xl flex items-center gap-3">
@@ -786,10 +793,10 @@ const CreateProblemForm = () => {
                             {...register(`testcases.${index}.input`)}
                             placeholder="Enter test case input"
                           />
-                          {errors.testcases?.[index]?.input && (
+                          {errors.testCases?.[index]?.input && (
                             <label className="label">
                               <span className="label-text-alt text-error">
-                                {errors.testcases[index].input.message}
+                                {errors.testCases[index].input.message}
                               </span>
                             </label>
                           )}
@@ -805,10 +812,10 @@ const CreateProblemForm = () => {
                             {...register(`testcases.${index}.output`)}
                             placeholder="Enter expected output"
                           />
-                          {errors.testcases?.[index]?.output && (
+                          {errors.testCases?.[index]?.output && (
                             <label className="label">
                               <span className="label-text-alt text-error">
-                                {errors.testcases[index].output.message}
+                                {errors.testCases[index].output.message}
                               </span>
                             </label>
                           )}
@@ -818,10 +825,10 @@ const CreateProblemForm = () => {
                   </div>
                 ))}
               </div>
-              {errors.testcases && !Array.isArray(errors.testcases) && (
+              {errors.testCases && !Array.isArray(errors.testCases) && (
                 <div className="mt-2">
                   <span className="text-error text-sm">
-                    {errors.testcases.message}
+                    {errors.testCases.message}
                   </span>
                 </div>
               )}
@@ -1051,7 +1058,7 @@ const CreateProblemForm = () => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default CreateProblemForm
+export default CreateProblemForm;

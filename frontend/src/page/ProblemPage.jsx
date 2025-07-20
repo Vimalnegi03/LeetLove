@@ -323,7 +323,7 @@ const handleSubmitSolution = (e) => {
                   value={code}
                   onChange={(value) => setCode(value || "")}
                   options={{
-                    minimap: { enabled: true},
+                    minimap: { enabled: false },
                     fontSize: 20,
                     lineNumbers: "on",
                     roundedSelection: false,
