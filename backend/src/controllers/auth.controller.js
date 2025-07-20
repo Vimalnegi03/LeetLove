@@ -39,6 +39,7 @@ export const registerUser=async(req,res)=>{
     })
     const token=jwt.sign({id:newUser.id,role:newUser.role},process.env.JWT_SECRET,{expiresIn:process.env.JWT_EXPIRY})
     res.cookie("token",token,{httpOnly:true,
+      secure:true,
         maxAge:10*24*60*60*1000,
     })
     res.status(201).json({
@@ -77,6 +78,7 @@ export const login=async(req,res)=>{
     {
         const token=jwt.sign({id:user.id,role:user.role},process.env.JWT_SECRET,{expiresIn:process.env.JWT_EXPIRY})
     res.cookie("token",token,{httpOnly:true,
+      secure:true,
         maxAge:10*24*60*60*1000,
     })
     res.status(201).json({
