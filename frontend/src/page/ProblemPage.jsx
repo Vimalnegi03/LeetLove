@@ -38,7 +38,7 @@ const ProblemPage = () => {
 
   const [code, setCode] = useState("");
   const [activeTab, setActiveTab] = useState("description");
-  const [selectedLanguage, setSelectedLanguage] = useState("javascript");
+  const [selectedLanguage, setSelectedLanguage] = useState("JAVA");
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [testcases, setTestCases] = useState([]);
 
@@ -88,7 +88,17 @@ const ProblemPage = () => {
       console.log("Error executing code", error);
     }
   };
-
+const handleSubmitSolution = (e) => {
+  e.preventDefault();
+  try {
+    const language_id = getLanguageId(selectedLanguage);
+    const stdin = problem.testcases.map((tc) => tc.input);
+    const expected_outputs = problem.testcases.map((tc) => tc.output);
+    executeCode(code, language_id, stdin, expected_outputs, id, { isSubmission: true });
+  } catch (error) {
+    console.log("Error submitting solution", error);
+  }
+};
   if (isProblemLoading || !problem) {
     return (
       <div className="flex items-center justify-center h-screen bg-base-200">
@@ -313,7 +323,7 @@ const ProblemPage = () => {
                   value={code}
                   onChange={(value) => setCode(value || "")}
                   options={{
-                    minimap: { enabled: false },
+                    minimap: { enabled: true},
                     fontSize: 20,
                     lineNumbers: "on",
                     roundedSelection: false,
@@ -336,9 +346,13 @@ const ProblemPage = () => {
                     {!isExecuting && <Play className="w-4 h-4" />}
                     Run Code
                   </button>
-                  <button className="btn btn-success gap-2">
-                    Submit Solution
-                  </button>
+                 <button
+  className={`btn btn-success gap-2 ${isExecuting ? "loading" : ""}`}
+  onClick={handleSubmitSolution}
+  disabled={isExecuting}
+>
+  Submit Solution
+</button>
                 </div>
               </div>
             </div>

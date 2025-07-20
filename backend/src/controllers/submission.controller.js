@@ -3,14 +3,16 @@ import { db } from "../libs/db.js"
 export const getAllSubmission=async(req,res)=>{
 try {
     const id=req.user.id
-    const submissions=db.Submission.findMany({
+    const submissions=await db.Submission.findMany({
         where: {
             userId:id
         }
     })
-   
+    
     res.status(200).json({success:true,message:"successfully fetched submissions",submissions})
 } catch (error) {
+    console.log(error.message);
+    
     return res.status(400).json({message:error.message})
 }
 }

@@ -1,14 +1,22 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo,useEffect, useRef} from "react";
 import { useAuthStore } from "../store/useAuthStore";
 import { Link } from "react-router-dom";
-import { Bookmark, PencilIcon, Trash, TrashIcon, Plus } from "lucide-react";
+import { Bookmark, PencilIcon, TrashIcon, Plus } from "lucide-react";
 import { useActions } from "../store/useAction";
 import AddToPlaylistModal from "./AddToPlaylist";
 import CreatePlaylistModal from "./CreatePlaylistModal";
 import { usePlaylistStore } from "../store/usePlaylistStore";
-
+import clsx from "clsx";
+import { useProblemStore } from "../store/useProblemStore";
+const badgeColors = {
+  EASY: "bg-emerald-100 text-emerald-700 border-emerald-300",
+  MEDIUM: "bg-amber-100 text-yellow-800 border-amber-300",
+  HARD: "bg-rose-200 text-rose-800 border-rose-300"
+};
 
 const ProblemsTable = ({ problems }) => {
+    console.log(problems);
+    
   const { authUser } = useAuthStore();
   const { onDeleteProblem } = useActions();
   const { createPlaylist } = usePlaylistStore();
@@ -19,8 +27,8 @@ const ProblemsTable = ({ problems }) => {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isAddToPlaylistModalOpen, setIsAddToPlaylistModalOpen] = useState(false);
   const [selectedProblemId, setSelectedProblemId] = useState(null);
+const { solvedProblems, getSolvedProblemsByUser } = useProblemStore();
 
-  // Extract all unique tags from problems
   const allTags = useMemo(() => {
     if (!Array.isArray(problems)) return [];
     const tagsSet = new Set();
@@ -28,99 +36,121 @@ const ProblemsTable = ({ problems }) => {
     return Array.from(tagsSet);
   }, [problems]);
 
-  // Define allowed difficulties
   const difficulties = ["EASY", "MEDIUM", "HARD"];
 
-  // Filter problems based on search, difficulty, and tags
+  // Filtering
   const filteredProblems = useMemo(() => {
     return (problems || [])
-      .filter((problem) =>
-        problem.title.toLowerCase().includes(search.toLowerCase())
-      )
-      .filter((problem) =>
-        difficulty === "ALL" ? true : problem.difficulty === difficulty
-      )
-      .filter((problem) =>
-        selectedTag === "ALL" ? true : problem.tags?.includes(selectedTag)
-      );
+      .filter((p) =>
+        p.title.toLowerCase().includes(search.toLowerCase()))
+      .filter((p) =>
+        difficulty === "ALL" ? true : p.difficulty === difficulty)
+      .filter((p) =>
+        selectedTag === "ALL" ? true : p.tags?.includes(selectedTag));
   }, [problems, search, difficulty, selectedTag]);
 
-  // Pagination logic
-  const itemsPerPage = 5;
-  const totalPages = Math.ceil(filteredProblems.length / itemsPerPage);
+  const itemsPerPage = 7;
+  const totalPages = Math.max(1, Math.ceil(filteredProblems.length / itemsPerPage));
   const paginatedProblems = useMemo(() => {
     return filteredProblems.slice(
       (currentPage - 1) * itemsPerPage,
       currentPage * itemsPerPage
     );
-  }, [filteredProblems, currentPage]);
+  }, [filteredProblems, currentPage, itemsPerPage]);
 
-  const handleDelete = (id) => {
-    onDeleteProblem(id);
-  };
-
-  const handleCreatePlaylist = async (data) => {
-    await createPlaylist(data);
-  };
-
+  // Handlers
+  const handleDelete = (id) => onDeleteProblem(id);
+  const handleCreatePlaylist = async (data) => await createPlaylist(data);
   const handleAddToPlaylist = (problemId) => {
     setSelectedProblemId(problemId);
     setIsAddToPlaylistModalOpen(true);
   };
 
-  return (
-    <div className="w-full max-w-6xl mx-auto mt-10">
-      {/* Header with Create Playlist Button */}
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold">Problems</h2>
+  // Pagination bullets for modern look
+  const renderPagination = () => (
+    <div className="flex flex-wrap justify-center gap-3 my-7">
+      <button
+        className={clsx("btn btn-sm", currentPage === 1 && "btn-disabled")}
+        disabled={currentPage === 1}
+        onClick={() => setCurrentPage(currentPage - 1)}
+      >Prev</button>
+      {[...Array(totalPages)].map((_, idx) => (
         <button
-          className="btn btn-primary gap-2"
+          key={idx}
+          className={clsx(
+            "w-3 h-3 rounded-full mx-1",
+            idx + 1 === currentPage
+              ? "bg-primary shadow-outline animate-scaleOut"
+              : "bg-primary/20"
+          )}
+          onClick={() => setCurrentPage(idx + 1)}
+          aria-label={`Page ${idx + 1}`}
+        />
+      ))}
+      <button
+        className={clsx("btn btn-sm", currentPage === totalPages && "btn-disabled")}
+        disabled={currentPage === totalPages}
+        onClick={() => setCurrentPage(currentPage + 1)}
+      >Next</button>
+    </div>
+  );
+
+  return (
+    <div className="w-full max-w-6xl mx-auto mt-6 mb-14"
+      style={{ scrollMarginTop: "120px" }}>
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row justify-between items-center gap-3 mb-8">
+        <h2 className="text-3xl font-bold tracking-tight">Problems</h2>
+        <button
+          className="btn btn-primary gap-2 shadow transition hover:-translate-y-1"
           onClick={() => setIsCreateModalOpen(true)}
         >
-          <Plus className="w-4 h-4" />
-          Create Playlist
+          <Plus className="w-4 h-4" /> Create Playlist
         </button>
       </div>
-
       {/* Filters */}
-      <div className="flex flex-wrap justify-between items-center mb-6 gap-4">
+      <div className="flex flex-wrap items-center gap-3 justify-between mb-7">
         <input
           type="text"
-          placeholder="Search by title"
-          className="input input-bordered w-full md:w-1/3 bg-base-200"
+          placeholder="🔍  Search problems"
+          className="input input-bordered w-full md:w-56 bg-base-100 text-base-content shadow-md"
           value={search}
-          onChange={(e) => setSearch(e.target.value)}
+          onChange={(e) => {
+            setSearch(e.target.value);
+            setCurrentPage(1);
+          }}
         />
         <select
-          className="select select-bordered bg-base-200"
+          className="select select-bordered bg-base-100 shadow-md"
           value={difficulty}
-          onChange={(e) => setDifficulty(e.target.value)}
-        >
+          onChange={(e) => {
+            setDifficulty(e.target.value);
+            setCurrentPage(1);
+          }}>
           <option value="ALL">All Difficulties</option>
           {difficulties.map((diff) => (
             <option key={diff} value={diff}>
-              {diff.charAt(0).toUpperCase() + diff.slice(1).toLowerCase()}
+              {diff.charAt(0) + diff.slice(1).toLowerCase()}
             </option>
           ))}
         </select>
         <select
-          className="select select-bordered bg-base-200"
+          className="select select-bordered bg-base-100 shadow-md"
           value={selectedTag}
-          onChange={(e) => setSelectedTag(e.target.value)}
-        >
+          onChange={(e) => {
+              setSelectedTag(e.target.value);
+              setCurrentPage(1);
+          }}>
           <option value="ALL">All Tags</option>
           {allTags.map((tag) => (
-            <option key={tag} value={tag}>
-              {tag}
-            </option>
+            <option key={tag} value={tag}>{tag}</option>
           ))}
         </select>
       </div>
-
       {/* Table */}
-      <div className="overflow-x-auto rounded-xl shadow-md">
-        <table className="table table-zebra table-lg bg-base-200 text-base-content">
-          <thead className="bg-base-300">
+      <div className="overflow-x-auto shadow-xl bg-white/70 dark:bg-[#181824]/60 rounded-2xl transition">
+        <table className="table table-lg text-base-content">
+          <thead className="bg-gradient-to-r from-primary/10 to-primary/0 text-base font-bold">
             <tr>
               <th>Solved</th>
               <th>Title</th>
@@ -132,21 +162,28 @@ const ProblemsTable = ({ problems }) => {
           <tbody>
             {paginatedProblems.length > 0 ? (
               paginatedProblems.map((problem) => {
-                const isSolved = problem.solvedBy.some(
-                  (user) => user.userId === authUser?.id
+                const isSolved = problem.solvedBy?.some(
+                  (user) => user.userId === authUser?.userId
                 );
                 return (
-                  <tr key={problem.id}>
+                  <tr
+                    key={problem.id}
+                    className="hover:bg-primary/10 transition-all cursor-pointer"
+                  >
                     <td>
                       <input
                         type="checkbox"
                         checked={isSolved}
                         readOnly
-                        className="checkbox checkbox-sm"
+                        className="checkbox checkbox-sm accent-primary cursor-pointer"
+                        title={isSolved ? "Solved" : "Not solved"}
                       />
                     </td>
                     <td>
-                      <Link to={`/problem/${problem.id}`} className="font-semibold hover:underline">
+                      <Link
+                        to={`/problem/${problem.id}`}
+                        className="font-bold hover:underline transition text-secondary"
+                      >
                         {problem.title}
                       </Link>
                     </td>
@@ -155,7 +192,7 @@ const ProblemsTable = ({ problems }) => {
                         {(problem.tags || []).map((tag, idx) => (
                           <span
                             key={idx}
-                            className="badge badge-outline badge-warning text-xs font-bold"
+                            className="badge bg-blue-100 border-blue-400 text-blue-700 font-medium text-xs"
                           >
                             {tag}
                           </span>
@@ -164,13 +201,11 @@ const ProblemsTable = ({ problems }) => {
                     </td>
                     <td>
                       <span
-                        className={`badge font-semibold text-xs text-white ${
-                          problem.difficulty === "EASY"
-                            ? "badge-success"
-                            : problem.difficulty === "MEDIUM"
-                            ? "badge-warning"
-                            : "badge-error"
-                        }`}
+                        className={clsx(
+                          "badge border font-bold text-xs px-2 py-1 transition",
+                          badgeColors[problem.difficulty] ||
+                            "bg-gray-100 text-gray-700 border-gray-200"
+                        )}
                       >
                         {problem.difficulty}
                       </span>
@@ -178,24 +213,30 @@ const ProblemsTable = ({ problems }) => {
                     <td>
                       <div className="flex flex-col md:flex-row gap-2 items-start md:items-center">
                         {authUser?.role === "ADMIN" && (
-                          <div className="flex gap-2">
+                          <div className="flex gap-1">
                             <button
+                              title="Delete"
                               onClick={() => handleDelete(problem.id)}
-                              className="btn btn-sm btn-error"
+                              className="btn btn-sm btn-error hover:scale-105 transition"
                             >
                               <TrashIcon className="w-4 h-4 text-white" />
                             </button>
-                            <button disabled className="btn btn-sm btn-warning">
+                            <button
+                              title="Edit (Coming Soon)"
+                              disabled
+                              className="btn btn-sm btn-warning opacity-60"
+                            >
                               <PencilIcon className="w-4 h-4 text-white" />
                             </button>
                           </div>
                         )}
                         <button
-                          className="btn btn-sm btn-outline flex gap-2 items-center"
+                          title="Save to Playlist"
+                          className="btn btn-sm btn-outline flex gap-2 items-center hover:bg-primary/10 transition"
                           onClick={() => handleAddToPlaylist(problem.id)}
                         >
                           <Bookmark className="w-4 h-4" />
-                          <span className="hidden sm:inline">Save to Playlist</span>
+                          <span className="hidden sm:inline">Save</span>
                         </button>
                       </div>
                     </td>
@@ -212,27 +253,7 @@ const ProblemsTable = ({ problems }) => {
           </tbody>
         </table>
       </div>
-
-      {/* Pagination */}
-      <div className="flex justify-center mt-6 gap-2">
-        <button
-          className="btn btn-sm"
-          disabled={currentPage === 1}
-          onClick={() => setCurrentPage((prev) => prev - 1)}
-        >
-          Prev
-        </button>
-        <span className="btn btn-ghost btn-sm">
-          {currentPage} / {totalPages}
-        </span>
-        <button
-          className="btn btn-sm"
-          disabled={currentPage === totalPages}
-          onClick={() => setCurrentPage((prev) => prev + 1)}
-        >
-          Next
-        </button>
-      </div>
+      {renderPagination()}
 
       {/* Modals */}
       <CreatePlaylistModal
@@ -240,7 +261,6 @@ const ProblemsTable = ({ problems }) => {
         onClose={() => setIsCreateModalOpen(false)}
         onSubmit={handleCreatePlaylist}
       />
-      
       <AddToPlaylistModal
         isOpen={isAddToPlaylistModalOpen}
         onClose={() => setIsAddToPlaylistModalOpen(false)}

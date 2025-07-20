@@ -41,13 +41,16 @@ getProblemById:async(id)=>{
    }
 },
 getSolvedProblemsByUser:async()=>{
-
+      set({isProblemsLoading:true});
     try {
         const res=await axiosInstance.get(`problems/get-solved-problems`)
-        set({problems:res.data.problems})
+        set({solvedProblems:res.data.problems})
     } catch (error) {
         console.log("errors in fetchinh solved problems")
         toast.error("failed to fectch problems")
+    }
+    finally{
+          set({isProblemsLoading:false})
     }
 }
 }))

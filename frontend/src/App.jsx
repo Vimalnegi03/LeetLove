@@ -11,6 +11,7 @@ import Layout from './layout/Layout'
 import AdminRoute from './components/AdminRoute'
 import AddProblem from './page/AddProblemPage'
 import ProblemPage from './page/ProblemPage'
+import Profile from './page/Profile'
 function App() {
   const {authUser,checkAuth,isCheckingAuth} = useAuthStore()
   useEffect(()=>{
@@ -49,7 +50,12 @@ function App() {
             element={authUser ? <AddProblem /> : <Navigate to="/login" />}
           />
         </Route>
-    </Routes>
+        
+   <Route
+          path="/profile"
+          element={authUser ? <Profile /> : <Navigate to="/login" />}
+        />
+      </Routes>
     </div>
   )
 }
