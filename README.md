@@ -142,9 +142,29 @@ LeetLove/
 
 ---
 
-## 🌟 Screenshots
+## 🌟 Screenshots-:
+### Schemas-:
+![Schema](/prisma-uml.png)
+### Admin Screen-:
+![Admin_Screen](/admin_screen.png)
+### User Screen -:
+![User_Screen](/userScreen.png)
+### Profile Page-:
+![Profile_Page](/Profile_Page.png)
+### Solved Problems -:
+![Solved_Problems](/Solved_Problems.png)
+### Submission Page -:
+![Submission_Page](/Submission_Page.png)
+### Calendar Streak-:
+![Calendar](/calendar_streak.png)
+### Problem Creation
+![create_problem](/create_problem(1).png)
+![create_problem](/create_problem(2).png)
+![create_problem](/create_problem(3).png)
+![create_problem](/create_problem(4).png)
+![create_problem](/playlist_screen.png)
 
-<em>Add GIFs or embedded images of the live UI, code editor, heatmap streak calendar, and playlist features here for maximum impact.</em>
+
 
 ---
 
