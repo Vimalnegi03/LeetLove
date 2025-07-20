@@ -12,6 +12,7 @@ import AdminRoute from './components/AdminRoute'
 import AddProblem from './page/AddProblemPage'
 import ProblemPage from './page/ProblemPage'
 import Profile from './page/Profile'
+import UpdateProfilePage from './page/UpdateProfilePage'
 function App() {
   const {authUser,checkAuth,isCheckingAuth} = useAuthStore()
   useEffect(()=>{
@@ -32,6 +33,7 @@ function App() {
     <div className='flex flex-col items-center justify-start'>
      <Toaster/>
     <Routes>
+      <Route path="/update-profile" element={authUser?<UpdateProfilePage/>:<Navigate to={"/login"}/>}/>
       <Route path="/" element={<Layout />}>
           <Route
             index

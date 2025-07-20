@@ -111,7 +111,9 @@ const Profile = () => {
 
             {/* Action Buttons */}
             <div className="card-actions justify-end mt-8 gap-3">
-              <button className="btn btn-outline btn-primary px-5">Edit Profile</button>
+             <Link to="/update-profile" className="btn btn-outline btn-primary px-5">
+  Edit Profile
+</Link>
               <button className="btn btn-primary px-5">Change Password</button>
             </div>
           </div>

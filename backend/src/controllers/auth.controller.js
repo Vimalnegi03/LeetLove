@@ -2,12 +2,13 @@ import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 import { db } from '../libs/db.js'
 import { UserRole } from '../generated/prisma/index.js'
-import crypto from 'crypto'
+
 import dotenv from 'dotenv'
-import { log } from 'console'
+
 import fs from "fs";
 import cloudinary from "../fileUpload/cloudinary.js";
 import upload from "../fileUpload/upload.js";
+import { log } from 'console'
 dotenv.config()
 export const registerUser=async(req,res)=>{
     const {name,email,password}=req.body
@@ -136,3 +137,63 @@ export const check=async(req,res)=>{
     }
 
 }
+
+
+export const updateUser = async (req, res) => {
+  const userId = req.user?.id; // or however you get the logged-in user ID
+  const { name, email, password } = req.body;
+  console.log(name)
+  let updatedData = {};
+
+  try {
+    // Ensure user exists
+    const user = await db.user.findUnique({ where: { id: userId } });
+    if (!user)
+      return res.status(404).json({ message: "User not found", success: false });
+
+    // Optional: update name/email
+    if (name) updatedData.name = name.trim();
+    if (email) updatedData.email = email.trim();
+
+    // Optional: update password
+    if (password && password.length >= 6) {
+      updatedData.password = await bcrypt.hash(password, 10);
+    }
+
+    // Optional: update image if there is a file uploaded
+    if (req.file && req.file.path) {
+      // Upload new image to Cloudinary
+      const result = await cloudinary.uploader.upload(req.file.path, {
+        folder: "leetlove",
+      });
+      // Delete temp file
+      fs.unlinkSync(req.file.path);
+      // Optional: delete previous image in Cloudinary (if you store public_id)
+      // if (user.imagePublicId) { await cloudinary.uploader.destroy(user.imagePublicId); }
+      updatedData.image = result.secure_url;
+      // Optionally: updatedData.imagePublicId = result.public_id;
+    }
+
+    // Update user in database
+    const updatedUser = await db.user.update({
+      where: { id: userId },
+      data: updatedData,
+    });
+
+    res.status(200).json({
+      message: "User updated successfully",
+      success: true,
+      user: {
+        id: updatedUser.id,
+        name: updatedUser.name,
+        email: updatedUser.email,
+        role: updatedUser.role,
+        image: updatedUser.image,
+      },
+    });
+  } catch (error) {
+    return res
+      .status(400)
+      .json({ message: error.message || "Unable to update user", success: false });
+  }
+};
