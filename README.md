@@ -2,6 +2,8 @@
 
 **LeetLove** is an open-source, full-stack, coding interview preparation platform inspired by LeetCode. It features a polished, modern UI; a growing library of curated challenges; real-time code execution; insightful stats; an activity streak calendar; profile management; and admin tools—designed to help you improve consistently and ace your interviews.
 
+<img src="./frontend/public/logo.png" height="300" width="400"/>
+
 ## 🚀 Features
 
 - **Rich Problem Library:**  
